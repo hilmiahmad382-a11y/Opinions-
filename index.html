@@ -370,8 +370,8 @@ table.innerHTML += `
 
 })
 .catch(error=>{
-console.error("POST ERROR:", error);
-alert("POST ERROR: " + error.message);
+console.error(error);
+alert(error.toString());
 });
 
 }
