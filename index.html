@@ -236,9 +236,42 @@ button{
 
 <script>
 
-// ANSWERS
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyb1-L_46PKu3jNy8AsQagfxrkupbJatc73fe5vpGXcvET_kcIGqdVUHqCnpmgpr_LA/exec";
 
-    function submitQuiz(){
+const answers = {
+q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
+q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
+};
+
+const explanations = {
+q1:"Asking for help.",
+q2:"Offering help.",
+q3:"Polite expression.",
+q4:"Offering to carry books.",
+q5:"Polite request.",
+q6:"Offering assistance.",
+q7:"Accepting help.",
+q8:"Polite refusal.",
+q9:"Helpful people assist others.",
+q10:"Most polite form of request."
+};
+
+let selectedAnswers = {};
+
+function selectAnswer(q, ans, el){
+
+selectedAnswers[q] = ans;
+
+let options = el.parentNode.querySelectorAll(".option");
+options.forEach(o => o.classList.remove("selected"));
+
+el.classList.add("selected");
+}
+
+const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
+function submitQuiz(){
 
 let score = 0;
 let output = "";
@@ -257,13 +290,14 @@ let name = document.getElementById("name").value.trim();
 let cls = document.getElementById("class").value.trim();
 
 if(!name || !cls){
-alert("Please enter your name and class.");
+alert("Please enter your Name and Class.");
 return;
 }
 
 let time = new Date().toLocaleString();
 
 document.getElementById("result").innerHTML = `
+
 <h3>🎯 Result</h3>
 Name: ${name}<br>
 Class: ${cls}<br>
@@ -283,119 +317,49 @@ score:score,
 time:time
 })
 })
-.then(res=>res.json())
-.then(()=>{
-loadRanking();
-showPopup(output);
-})
-.catch(err=>{
-console.error(err);
-alert("Failed to save score.");
-showPopup(output);
-});
-
-}
-const answers = {
-q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
-q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
-};
-
-// EXPLANATIONS
-const explanations = {
-q1:"Asking for help.",
-q2:"Offering help.",
-q3:"Polite expression.",
-q4:"Offering to carry books.",
-q5:"Polite request.",
-q6:"Offering assistance.",
-q7:"Accepting help.",
-q8:"Polite refusal.",
-q9:"Helpful people assist others.",
-q10:"Most polite form of request."
-};
-
-// SELECTED ANSWERS
-let selectedAnswers = {};
-
-function selectAnswer(q, ans, el){
-
-selectedAnswers[q] = ans;
-
-let options = el.parentNode.querySelectorAll(".option");
-options.forEach(o => o.classList.remove("selected"));
-
-el.classList.add("selected");
-}
-
-// SOUND
-const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
-const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
-
-function submitQuiz(){
-fetch("https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name:name,
-class:cls,
-score:score,
-time:time
-})
-})
 .then(response=>response.json())
 .then(data=>{
+
+if(score >= 8){
+correctSound.play();
+}else{
+wrongSound.play();
+}
+
 loadRanking();
+showPopup(output);
+
 })
 .catch(error=>{
 console.error(error);
+alert("Failed to save score.");
 });
-let score = 0;
-let output = "";
 
-for(let i=1;i<=10;i++){
-
-if(selectedAnswers["q"+i] === answers["q"+i]){
-score++;
-correctSound.play();
-output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
-}else{
-wrongSound.play();
-output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
 }
-}
-
-let name = document.getElementById("name").value;
-let cls = document.getElementById("class").value;
-let time = new Date().toLocaleString();
-
-// SAVE RANKING
-let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-ranking.push({name, class:cls, score, time});
-localStorage.setItem("ranking", JSON.stringify(ranking));
 
 function loadRanking(){
 
-fetch("https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec")
-.then(res=>res.json())
+fetch(SCRIPT_URL)
+.then(response=>response.json())
 .then(ranking=>{
 
 ranking.sort((a,b)=>b.score-a.score);
 
 let table = document.getElementById("ranking");
+
 table.innerHTML = "";
 
 ranking.forEach((r,index)=>{
 
-let badge = "";
+let badge="";
 
 if(index===0) badge="🥇 GOLD";
 else if(index===1) badge="🥈 SILVER";
 else if(index===2) badge="🥉 BRONZE";
-else badge=index+1;
+else badge="—";
 
 table.innerHTML += `
+
 <tr>
 <td>${badge}</td>
 <td>${r.name}</td>
@@ -409,37 +373,9 @@ table.innerHTML += `
 
 })
 .catch(error=>{
-console.error("Leaderboard error:", error);
+console.error("Leaderboard Error:", error);
 });
 
-}
-
-showPopup(output);
-}
-
-// LEADERBOARD
-function loadRanking(){
-
-let table = document.getElementById("ranking");
-table.innerHTML = "";
-
-ranking.forEach((r,index)=>{
-
-let badge = "";
-if(index===0) badge="🥇 GOLD";
-else if(index===1) badge="🥈 SILVER";
-else if(index===2) badge="🥉 BRONZE";
-else badge="—";
-
-table.innerHTML += `
-<tr>
-<td>${badge}</td>
-<td>${r.name}</td>
-<td>${r.class}</td>
-<td>${r.score}</td>
-<td>${r.time}</td>
-</tr>`;
-});
 }
 
 function showPopup(html){
@@ -452,7 +388,7 @@ document.getElementById("popup").style.display = "none";
 }
 
 loadRanking();
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec";
+
 </script>
 
 </body>
