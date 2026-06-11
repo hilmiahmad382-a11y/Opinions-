@@ -237,6 +237,64 @@ button{
 <script>
 
 // ANSWERS
+
+    function submitQuiz(){
+
+let score = 0;
+let output = "";
+
+for(let i=1;i<=10;i++){
+
+if(selectedAnswers["q"+i] === answers["q"+i]){
+score++;
+output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
+}else{
+output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
+}
+}
+
+let name = document.getElementById("name").value.trim();
+let cls = document.getElementById("class").value.trim();
+
+if(!name || !cls){
+alert("Please enter your name and class.");
+return;
+}
+
+let time = new Date().toLocaleString();
+
+document.getElementById("result").innerHTML = `
+<h3>🎯 Result</h3>
+Name: ${name}<br>
+Class: ${cls}<br>
+Score: ${score}/10<br>
+Time: ${time}
+`;
+
+fetch(SCRIPT_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name:name,
+class:cls,
+score:score,
+time:time
+})
+})
+.then(res=>res.json())
+.then(()=>{
+loadRanking();
+showPopup(output);
+})
+.catch(err=>{
+console.error(err);
+alert("Failed to save score.");
+showPopup(output);
+});
+
+}
 const answers = {
 q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
 q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
@@ -274,7 +332,25 @@ const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4
 const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
 
 function submitQuiz(){
-
+fetch("https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name:name,
+class:cls,
+score:score,
+time:time
+})
+})
+.then(response=>response.json())
+.then(data=>{
+loadRanking();
+})
+.catch(error=>{
+console.error(error);
+});
 let score = 0;
 let output = "";
 
@@ -299,23 +375,50 @@ let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
 ranking.push({name, class:cls, score, time});
 localStorage.setItem("ranking", JSON.stringify(ranking));
 
-loadRanking();
+function loadRanking(){
 
-document.getElementById("result").innerHTML = `
-<h3>🎯 Result</h3>
-Name: ${name}<br>
-Class: ${cls}<br>
-Score: ${score}/10<br>
-Time: ${time}
+fetch("https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec")
+.then(res=>res.json())
+.then(ranking=>{
+
+ranking.sort((a,b)=>b.score-a.score);
+
+let table = document.getElementById("ranking");
+table.innerHTML = "";
+
+ranking.forEach((r,index)=>{
+
+let badge = "";
+
+if(index===0) badge="🥇 GOLD";
+else if(index===1) badge="🥈 SILVER";
+else if(index===2) badge="🥉 BRONZE";
+else badge=index+1;
+
+table.innerHTML += `
+<tr>
+<td>${badge}</td>
+<td>${r.name}</td>
+<td>${r.class}</td>
+<td>${r.score}</td>
+<td>${r.time}</td>
+</tr>
 `;
+
+});
+
+})
+.catch(error=>{
+console.error("Leaderboard error:", error);
+});
+
+}
 
 showPopup(output);
 }
 
 // LEADERBOARD
 function loadRanking(){
-let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-ranking.sort((a,b)=>b.score - a.score);
 
 let table = document.getElementById("ranking");
 table.innerHTML = "";
@@ -349,7 +452,7 @@ document.getElementById("popup").style.display = "none";
 }
 
 loadRanking();
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8-pwr9xqe01Gfn8fPFl9hO_XPtjnBXm_bjUqw7pYXDZ1ShdfMx2YZNfmQG3lwq1ch/exec";
 </script>
 
 </body>
