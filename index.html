@@ -307,9 +307,6 @@ Time: ${time}
 
 fetch(SCRIPT_URL,{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
 body:JSON.stringify({
 name:name,
 class:cls,
@@ -373,7 +370,8 @@ table.innerHTML += `
 
 })
 .catch(error=>{
-console.error("Leaderboard Error:", error);
+console.error("POST ERROR:", error);
+alert("POST ERROR: " + error.message);
 });
 
 }
