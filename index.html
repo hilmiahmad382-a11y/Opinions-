@@ -9,8 +9,8 @@
 <style>
 body{
     font-family:'Poppins', sans-serif;
-    background: linear-gradient(135deg,#74ebd5,#9face6);
     margin:0;
+    background: linear-gradient(135deg,#74ebd5,#9face6);
 }
 
 .container{
@@ -19,6 +19,19 @@ body{
     background:white;
     padding:25px;
     border-radius:15px;
+}
+
+h1{
+    text-align:center;
+    color:#4b3f72;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:5px 0 15px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 
 .question{
@@ -40,6 +53,7 @@ button{
     cursor:pointer;
 }
 
+/* RESULT */
 .result{
     margin-top:15px;
     padding:15px;
@@ -48,7 +62,7 @@ button{
     border-radius:10px;
 }
 
-/* POPUP STYLE */
+/* POPUP */
 #popup{
     display:none;
     position:fixed;
@@ -64,25 +78,21 @@ button{
 .popup-content{
     background:white;
     padding:20px;
-    width:80%;
-    max-width:600px;
+    width:85%;
+    max-width:650px;
     border-radius:12px;
     max-height:80%;
     overflow-y:auto;
 }
 
-.popup-content h2{
-    margin-top:0;
-}
-
 .close-btn{
-    background:#ff4d4d;
+    background:red;
     color:white;
     border:none;
     padding:8px 12px;
+    float:right;
     border-radius:8px;
     cursor:pointer;
-    float:right;
 }
 </style>
 </head>
@@ -94,26 +104,25 @@ button{
 <h1>🌟 English Help Expressions Quiz</h1>
 
 <input id="name" placeholder="Name">
-<br><br>
 <input id="class" placeholder="Class">
 
 <!-- QUESTIONS -->
-<div class="question">1. Can you help me?<br>
+<div class="question">1. “Can you help me?” is ____<br>
 <input type="radio" name="q1" value="b"> asking for help<br>
 <input type="radio" name="q1" value="a"> greeting
 </div>
 
-<div class="question">2. Offer help:<br>
+<div class="question">2. Which offers help?<br>
 <input type="radio" name="q2" value="a"> Let me help you<br>
 <input type="radio" name="q2" value="b"> I disagree
 </div>
 
-<div class="question">3. Would you mind helping me?<br>
+<div class="question">3. “Would you mind helping me?” is ____<br>
 <input type="radio" name="q3" value="b"> polite<br>
 <input type="radio" name="q3" value="a"> rude
 </div>
 
-<div class="question">4. Books are heavy:<br>
+<div class="question">4. Books are heavy → ____<br>
 <input type="radio" name="q4" value="b"> Let me carry them<br>
 <input type="radio" name="q4" value="a"> I’m sorry
 </div>
@@ -123,7 +132,32 @@ button{
 <input type="radio" name="q5" value="a"> Help me!
 </div>
 
-<button onclick="submitQuiz()">Submit</button>
+<div class="question">6. “Do you need any help?” means ____<br>
+<input type="radio" name="q6" value="b"> offering assistance<br>
+<input type="radio" name="q6" value="a"> greeting
+</div>
+
+<div class="question">7. Accept help:<br>
+<input type="radio" name="q7" value="b"> Yes, please<br>
+<input type="radio" name="q7" value="a"> No problem
+</div>
+
+<div class="question">8. Refuse politely:<br>
+<input type="radio" name="q8" value="b"> No, thank you<br>
+<input type="radio" name="q8" value="a"> Go away
+</div>
+
+<div class="question">9. Helpful person:<br>
+<input type="radio" name="q9" value="b"> offers assistance<br>
+<input type="radio" name="q9" value="a"> ignores others
+</div>
+
+<div class="question">10. Most polite:<br>
+<input type="radio" name="q10" value="b"> Could you please help me?<br>
+<input type="radio" name="q10" value="a"> Help me!
+</div>
+
+<button onclick="submitQuiz()">Submit Quiz</button>
 
 <div class="result" id="result"></div>
 
@@ -141,33 +175,36 @@ button{
 <script>
 
 const answers = {
-q1:"b",
-q2:"a",
-q3:"b",
-q4:"b",
-q5:"b"
+q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
+q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
 };
 
 const explanations = {
-q1:"'Can you help me?' means asking someone for help.",
+q1:"Asking someone for help.",
 q2:"'Let me help you' is offering assistance.",
 q3:"'Would you mind...' is a polite expression.",
-q4:"Offering to carry books shows help.",
-q5:"'Could you help me, please?' is a polite request."
+q4:"Offering help to carry heavy books.",
+q5:"Polite request uses 'Could you please...'",
+q6:"Asking if someone needs help means offering assistance.",
+q7:"'Yes, please' means accepting help.",
+q8:"'No, thank you' is a polite refusal.",
+q9:"Helpful people offer assistance.",
+q10:"Most polite form uses 'Could you please...'"
 };
 
 function submitQuiz(){
-let score = 0;
-let explanationHTML = "";
 
-for(let i=1;i<=5;i++){
+let score = 0;
+let output = "";
+
+for(let i=1;i<=10;i++){
 let q = document.querySelector('input[name="q'+i+'"]:checked');
 
 if(q && q.value === answers["q"+i]){
 score++;
-explanationHTML += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
+output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
 } else {
-explanationHTML += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
+output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
 }
 }
 
@@ -177,18 +214,18 @@ let time = new Date().toLocaleString();
 
 document.getElementById("result").innerHTML = `
 <h3>🎯 Result</h3>
-Name: ${name}<br>
-Class: ${cls}<br>
-Score: ${score}/5<br>
-Time: ${time}
+<b>Name:</b> ${name}<br>
+<b>Class:</b> ${cls}<br>
+<b>Score:</b> ${score}/10<br>
+<b>Time:</b> ${time}
 `;
 
-/* SAVE RANKING */
+/* leaderboard */
 let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
 ranking.push({name, class:cls, score, time});
 localStorage.setItem("ranking", JSON.stringify(ranking));
 
-showPopup(explanationHTML);
+showPopup(output);
 }
 
 function showPopup(html){
@@ -199,6 +236,7 @@ document.getElementById("popup").style.display = "flex";
 function closePopup(){
 document.getElementById("popup").style.display = "none";
 }
+
 </script>
 
 </body>
