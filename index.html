@@ -21,10 +21,17 @@ body{
     border-radius:15px;
 }
 
-h1{
-    text-align:center;
+h1{text-align:center;}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:5px 0 10px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
 }
 
+/* QUESTION STYLE */
 .question{
     background:#f8f9ff;
     padding:15px;
@@ -33,12 +40,27 @@ h1{
     border-radius:10px;
 }
 
-input[type="text"]{
-    width:100%;
+/* CLICKABLE OPTIONS */
+.option{
+    display:block;
     padding:10px;
-    margin:5px 0 10px 0;
-    border-radius:8px;
-    border:1px solid #ccc;
+    margin:6px 0;
+    border:2px solid #ddd;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.2s;
+    background:white;
+}
+
+.option:hover{
+    border-color:#6c63ff;
+    transform:scale(1.02);
+}
+
+.option.selected{
+    background:#6c63ff;
+    color:white;
+    border-color:#6c63ff;
 }
 
 button{
@@ -52,6 +74,7 @@ button{
     cursor:pointer;
 }
 
+/* RESULT */
 .result{
     margin-top:15px;
     padding:15px;
@@ -64,10 +87,8 @@ button{
 #popup{
     display:none;
     position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
+    top:0;left:0;
+    width:100%;height:100%;
     background:rgba(0,0,0,0.6);
     justify-content:center;
     align-items:center;
@@ -101,173 +122,94 @@ button{
 
 <h1>🌟 English Help Expressions Quiz</h1>
 
-<label>Name:</label>
-<input type="text" id="name">
+<input id="name" placeholder="Name">
+<input id="class" placeholder="Class">
 
-<label>Class:</label>
-<input type="text" id="class">
+<!-- QUESTIONS (UNCHANGED CONTENT) -->
 
-<!-- QUESTIONS (UNCHANGED) -->
 <div class="question">
 1. “Can you help me?” is an expression of ____.
-   a. greeting<br>
-   b. asking for help<br>
-   c. apologizing<br>
-   d. giving opinion
+<div class="option" onclick="selectAnswer('q1','a',this)">A. greeting</div>
+<div class="option" onclick="selectAnswer('q1','b',this)">B. asking for help</div>
+<div class="option" onclick="selectAnswer('q1','c',this)">C. apologizing</div>
+<div class="option" onclick="selectAnswer('q1','d',this)">D. giving opinion</div>
 </div>
 
 <div class="question">
 2. Which expression offers help?
-   a. Let me help you<br>
-   b. I disagree<br>
-   c. Good night<br>
-   d. Turn left
+<div class="option" onclick="selectAnswer('q2','a',this)">A. Let me help you</div>
+<div class="option" onclick="selectAnswer('q2','b',this)">B. I disagree</div>
+<div class="option" onclick="selectAnswer('q2','c',this)">C. Good night</div>
+<div class="option" onclick="selectAnswer('q2','d',this)">D. Turn left</div>
 </div>
 
 <div class="question">
 3. “Would you mind helping me?” is ____.
-   a. rude<br>
-   b. polite<br>
-   c. angry<br>
-   d. informal
+<div class="option" onclick="selectAnswer('q3','a',this)">A. rude</div>
+<div class="option" onclick="selectAnswer('q3','b',this)">B. polite</div>
+<div class="option" onclick="selectAnswer('q3','c',this)">C. angry</div>
+<div class="option" onclick="selectAnswer('q3','d',this)">D. informal</div>
 </div>
 
 <div class="question">
-4. A: “My books are very heavy.”  
-   B: “____”
-   a. I’m sorry<br>
-   b. Let me carry them for you<br>
-   c. Goodbye<br>
-   d. I disagree
+4. A: “My books are very heavy.” B: “____”
+<div class="option" onclick="selectAnswer('q4','a',this)">A. I’m sorry</div>
+<div class="option" onclick="selectAnswer('q4','b',this)">B. Let me carry them for you</div>
+<div class="option" onclick="selectAnswer('q4','c',this)">C. Goodbye</div>
+<div class="option" onclick="selectAnswer('q4','d',this)">D. I disagree</div>
 </div>
 
 <div class="question">
 5. Which sentence asks for help politely?
-   a. Help me now!<br>
-   b. Could you help me, please?<br>
-   c. Give me that!<br>
-   d. Be quiet!
+<div class="option" onclick="selectAnswer('q5','a',this)">A. Help me now!</div>
+<div class="option" onclick="selectAnswer('q5','b',this)">B. Could you help me, please?</div>
+<div class="option" onclick="selectAnswer('q5','c',this)">C. Give me that!</div>
+<div class="option" onclick="selectAnswer('q5','d',this)">D. Be quiet!</div>
 </div>
 
 <div class="question">
 6. “Do you need any help?” means ____.
-   a. asking for opinion<br>
-   b. offering assistance<br>
-   c. apologizing<br>
-   d. greeting someone
+<div class="option" onclick="selectAnswer('q6','a',this)">A. asking for opinion</div>
+<div class="option" onclick="selectAnswer('q6','b',this)">B. offering assistance</div>
+<div class="option" onclick="selectAnswer('q6','c',this)">C. apologizing</div>
+<div class="option" onclick="selectAnswer('q6','d',this)">D. greeting someone</div>
 </div>
 
 <div class="question">
 7. Which response accepts help?
-   a. No problem<br>
-   b. Yes, please<br>
-   c. I forgive you<br>
-   d. Turn right
+<div class="option" onclick="selectAnswer('q7','a',this)">A. No problem</div>
+<div class="option" onclick="selectAnswer('q7','b',this)">B. Yes, please</div>
+<div class="option" onclick="selectAnswer('q7','c',this)">C. I forgive you</div>
+<div class="option" onclick="selectAnswer('q7','d',this)">D. Turn right</div>
 </div>
 
 <div class="question">
 8. Which response refuses help politely?
-   a. Go away<br>
-   b. No, thank you<br>
-   c. Be quiet<br>
-   d. I disagree
+<div class="option" onclick="selectAnswer('q8','a',this)">A. Go away</div>
+<div class="option" onclick="selectAnswer('q8','b',this)">B. No, thank you</div>
+<div class="option" onclick="selectAnswer('q8','c',this)">C. Be quiet</div>
+<div class="option" onclick="selectAnswer('q8','d',this)">D. I disagree</div>
 </div>
 
 <div class="question">
 9. A helpful person usually ____.
-   a. ignores others<br>
-   b. offers assistance<br>
-   c. gets angry easily<br>
-   d. lies often
+<div class="option" onclick="selectAnswer('q9','a',this)">A. ignores others</div>
+<div class="option" onclick="selectAnswer('q9','b',this)">B. offers assistance</div>
+<div class="option" onclick="selectAnswer('q9','c',this)">C. gets angry easily</div>
+<div class="option" onclick="selectAnswer('q9','d',this)">D. lies often</div>
 </div>
 
 <div class="question">
 10. Which expression is the most polite?
-    a. Help me!<br>
-    b. Could you please help me?<br>
-    c. Carry this!<br>
-    d. Move!
+<div class="option" onclick="selectAnswer('q10','a',this)">A. Help me!</div>
+<div class="option" onclick="selectAnswer('q10','b',this)">B. Could you please help me?</div>
+<div class="option" onclick="selectAnswer('q10','c',this)">C. Carry this!</div>
+<div class="option" onclick="selectAnswer('q10','d',this)">D. Move!</div>
 </div>
 
 <button onclick="submitQuiz()">Submit Quiz</button>
 
 <div class="result" id="result"></div>
-
-</div>
-
-<!-- POPUP -->
-<div id="popup">
-  <div class="popup-content">
-    <button class="close-btn" onclick="closePopup()">X</button>
-    <h2>📘 Answer Explanations</h2>
-    <div id="explanations"></div>
-  </div>
-</div>
-
-<script>
-// SOUND EFFECTS
-const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
-const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
-    
-const answers = {
-q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
-q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
-};
-
-const explanations = {
-q1:"It is used to ask someone for help.",
-q2:"'Let me help you' is an offer of help.",
-q3:"'Would you mind...' is a polite expression.",
-q4:"It shows offering help to carry heavy books.",
-q5:"'Could you help me, please?' is a polite request.",
-q6:"It means offering assistance to someone.",
-q7:"'Yes, please' is accepting help.",
-q8:"'No, thank you' is a polite refusal.",
-q9:"Helpful people offer assistance to others.",
-q10:"This is the most polite form of requesting help."
-};
-
-
-function submitQuiz(){
-
-let score = 0;
-let output = "";
-
-for(let i=1;i<=10;i++){
-let q = document.querySelector('input[name="q'+i+'"]:checked');
-
-if(q && q.value === answers["q"+i]){
-score++;
-correctSound.play(); // 🎉 correct sound
-output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
-} else {
-wrongSound.play(); // ❌ wrong sound
-output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
-let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-
-ranking.push({
-name: name,
-class: cls,
-score: score,
-time: time
-});
-
-localStorage.setItem("ranking", JSON.stringify(ranking));
-
-loadRanking(); // 🔥 ADD THIS LINE}
-}
-
-let name = document.getElementById("name").value;
-let cls = document.getElementById("class").value;
-let time = new Date().toLocaleString();
-
-document.getElementById("result").innerHTML = `
-<h3>🎯 Result</h3>
-<b>Name:</b> ${name}<br>
-<b>Class:</b> ${cls}<br>
-<b>Score:</b> ${score}/10<br>
-<b>Time:</b> ${time}
-`; }
 
 <h2>🏆 Leaderboard</h2>
 <table border="1" width="100%">
@@ -281,32 +223,110 @@ document.getElementById("result").innerHTML = `
 <tbody id="ranking"></tbody>
 </table>
 
-    
-</scriptfunction loadRanking(){
-let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+</div>
 
-// sort highest score first
-ranking.sort((a, b) => b.score - a.score);
+<!-- POPUP -->
+<div id="popup">
+<div class="popup-content">
+<button class="close-btn" onclick="closePopup()">X</button>
+<h2>📘 Explanations</h2>
+<div id="explanations"></div>
+</div>
+</div>
+
+<script>
+
+// ANSWERS
+const answers = {
+q1:"b", q2:"a", q3:"b", q4:"b", q5:"b",
+q6:"b", q7:"b", q8:"b", q9:"b", q10:"b"
+};
+
+// EXPLANATIONS
+const explanations = {
+q1:"Asking for help.",
+q2:"Offering help.",
+q3:"Polite expression.",
+q4:"Offering to carry books.",
+q5:"Polite request.",
+q6:"Offering assistance.",
+q7:"Accepting help.",
+q8:"Polite refusal.",
+q9:"Helpful people assist others.",
+q10:"Most polite form of request."
+};
+
+// SELECTED ANSWERS
+let selectedAnswers = {};
+
+function selectAnswer(q, ans, el){
+
+selectedAnswers[q] = ans;
+
+let options = el.parentNode.querySelectorAll(".option");
+options.forEach(o => o.classList.remove("selected"));
+
+el.classList.add("selected");
+}
+
+// SOUND
+const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
+function submitQuiz(){
+
+let score = 0;
+let output = "";
+
+for(let i=1;i<=10;i++){
+
+if(selectedAnswers["q"+i] === answers["q"+i]){
+score++;
+correctSound.play();
+output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
+}else{
+wrongSound.play();
+output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
+}
+}
+
+let name = document.getElementById("name").value;
+let cls = document.getElementById("class").value;
+let time = new Date().toLocaleString();
+
+// SAVE RANKING
+let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+ranking.push({name, class:cls, score, time});
+localStorage.setItem("ranking", JSON.stringify(ranking));
+
+loadRanking();
+
+document.getElementById("result").innerHTML = `
+<h3>🎯 Result</h3>
+Name: ${name}<br>
+Class: ${cls}<br>
+Score: ${score}/10<br>
+Time: ${time}
+`;
+
+showPopup(output);
+}
+
+// LEADERBOARD
+function loadRanking(){
+let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
+ranking.sort((a,b)=>b.score - a.score);
 
 let table = document.getElementById("ranking");
 table.innerHTML = "";
 
-ranking.forEach((r, index) => {
+ranking.forEach((r,index)=>{
 
 let badge = "";
-
-if(index === 0){
-badge = "🥇 GOLD";
-}
-else if(index === 1){
-badge = "🥈 SILVER";
-}
-else if(index === 2){
-badge = "🥉 BRONZE";
-}
-else{
-badge = "—";
-}
+if(index===0) badge="🥇 GOLD";
+else if(index===1) badge="🥈 SILVER";
+else if(index===2) badge="🥉 BRONZE";
+else badge="—";
 
 table.innerHTML += `
 <tr>
@@ -315,10 +335,22 @@ table.innerHTML += `
 <td>${r.class}</td>
 <td>${r.score}</td>
 <td>${r.time}</td>
-</tr>
-`;
+</tr>`;
 });
-}>
+}
+
+function showPopup(html){
+document.getElementById("explanations").innerHTML = html;
+document.getElementById("popup").style.display = "flex";
+}
+
+function closePopup(){
+document.getElementById("popup").style.display = "none";
+}
+
+loadRanking();
+
+</script>
 
 </body>
 </html>
