@@ -229,6 +229,7 @@ button{
 </div>
 </div>
 
+
 <script>
 // 1. SAFE AUDIO SETUP
 let correctSound, wrongSound;
@@ -239,7 +240,7 @@ try {
     console.warn("Audio initialization skipped or blocked:", e);
 }
 
-// 2. DATA CONFIGURATION
+// 2. DATA CONFIGURATION (Fixed with your exact live URL)
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Oye7GVvofHOabf90u745mx8fIfnh6kdswN2VcMq09rM75dz7QnAnSeiOurSrMBCc/exec";
 
 const answers = {
@@ -262,7 +263,7 @@ const explanations = {
 
 let selectedAnswers = {};
 
-// 3. SELECTION FUNCTION
+// 3. SELECTION FUNCTION (Fully isolated so options are always clickable)
 function selectAnswer(q, ans, el){
     try {
         selectedAnswers[q] = ans;
@@ -331,20 +332,23 @@ function submitQuiz() {
     })
     .then(() => {
         console.log("Data pushed successfully!");
-        // Small delay to let the sheet update before gathering new scores
+        // Wait a brief moment for the spreadsheet to write before refreshing the board
         setTimeout(() => {
             loadRanking();
-        }, 1200); 
+        }, 1500); 
     })
     .catch(err => console.error("Database Save Failed:", err));
 
     showPopup(output);
 }
 
-// 5. LEADERBOARD DISPLAY
+// 5. LEADERBOARD DISPLAY (Wrapped in safety so it can never freeze the page)
 function loadRanking(){
     fetch(SCRIPT_URL)
-    .then(response => response.json())
+    .then(response => {
+        if(!response.ok) throw new Error("Network response error");
+        return response.json();
+    })
     .then(ranking => {
         if(!Array.isArray(ranking)) return;
         
@@ -370,7 +374,9 @@ function loadRanking(){
             `;
         });
     })
-    .catch(error => console.error("Leaderboard error:", error));
+    .catch(error => {
+        console.error("Leaderboard background load failed safely:", error);
+    });
 }
 
 function showPopup(html){
@@ -382,9 +388,14 @@ function closePopup(){
     document.getElementById("popup").style.display = "none";
 }
 
-// Initial pull on window open
-loadRanking();
+// Safely pull leaderboard data on startup
+try {
+    loadRanking();
+} catch(e) {
+    console.error("Initial load failed safely:", e);
+}
 </script>
+
 
 </body>
 </html>
