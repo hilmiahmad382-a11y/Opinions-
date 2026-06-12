@@ -268,6 +268,10 @@ options.forEach(o => o.classList.remove("selected"));
 el.classList.add("selected");
 }
 
+// SOUND
+const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
 function submitQuiz(){
 
 let name = document.getElementById("name").value;
@@ -281,8 +285,17 @@ if (!name || !cls) {
 let score = 0;
 let output = "";
 
-for(let i=1;i<=10;i++)
+for(let i=1;i<=10;i++){
 
+if(selectedAnswers["q"+i] === answers["q"+i]){
+score++;
+correctSound.play();
+output += `<p>✔ Q${i}: Correct - ${explanations["q"+i]}</p>`;
+}else{
+wrongSound.play();
+output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
+}
+}
 
 let time = new Date().toLocaleString();
 
