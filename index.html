@@ -264,14 +264,15 @@ const explanations = {
 let selectedAnswers = {};
 
 // 3. SELECTION FUNCTION (Fully isolated so options are always clickable)
-function selectAnswer(q, ans, el){
-    try {
-        selectedAnswers[q] = ans;
-        let options = el.parentNode.querySelectorAll(".option");
-        options.forEach(o => o.classList.remove("selected"));
-        el.classList.add("selected");
-    } catch(err) {
-        console.error("Selection error:", err);
+
+function selectAnswer(questionId, choice, element) {
+    console.log("Question:", questionId, "Choice:", choice);
+    
+    // Example logic: Remove 'selected' class from siblings and add to clicked element
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.classList.remove('selected'));
+    element.classList.add('selected');
+
     }
 }
 
@@ -337,6 +338,7 @@ fetch(SCRIPT_URL)
         return response.json();
     })
     .catch(err => console.error("Fetch error:", err));
+    
 .then(data => console.log(data));
     })
     .catch(err => console.error("Database Save Failed:", err));
