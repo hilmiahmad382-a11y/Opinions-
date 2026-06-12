@@ -234,9 +234,18 @@ button{
 </div>
 </div>
 
-<script>
 
 <script>
+// 1. SAFE AUDIO SETUP (Will not crash the site if the links are broken)
+let correctSound, wrongSound;
+try {
+    correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
+    wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+} catch (e) {
+    console.warn("Audio initialization skipped or blocked:", e);
+}
+
+// 2. DATA CONFIGURATION
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwTxVEzBfZz2aeb24lQ0sY48JO_0Tpag1Kx3BYRsLN3kp6bu4Qd-Lb1v7aJJspu06Q/exec";
 
 const answers = {
@@ -259,17 +268,23 @@ const explanations = {
 
 let selectedAnswers = {};
 
-// This allows clicking your options safely!
+// 3. SELECTION FUNCTION (Placed safely here to ensure clicking works)
 function selectAnswer(q, ans, el){
-    selectedAnswers[q] = ans;
-    let options = el.parentNode.querySelectorAll(".option");
-    options.forEach(o => o.classList.remove("selected"));
-    el.classList.add("selected");
+    try {
+        selectedAnswers[q] = ans;
+        
+        // Find options inside this specific question block
+        let options = el.parentNode.querySelectorAll(".option");
+        options.forEach(o => o.classList.remove("selected"));
+        
+        // Highlight chosen option
+        el.classList.add("selected");
+    } catch(err) {
+        console.error("Selection error:", err);
+    }
 }
 
-const correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
-const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
-
+// 4. SUBMISSION HANDLING
 function submitQuiz(){
     let name = document.getElementById("name").value.trim();
     let cls = document.getElementById("class").value.trim();
@@ -301,14 +316,15 @@ function submitQuiz(){
         Time: ${time}
     `;
 
-    // Audio Playback Handling safely
-    if(score >= 8){
-        correctSound.play().catch(e => console.log("Audio play blocked or failed: ", e));
-    } else {
-        wrongSound.play().catch(e => console.log("Audio play blocked or failed: ", e));
+    // Play sounds safely without blocking data transmission
+    try {
+        if(score >= 8 && correctSound) correctSound.play().catch(()=>{});
+        else if(wrongSound) wrongSound.play().catch(()=>{});
+    } catch(audioErr) {
+        console.log("Audio play blocked");
     }
 
-    // POSTING DATA: Uses SCRIPT_URL variable and dynamic values instead of hardcoding
+    // POST Request to Google Sheets
     fetch(SCRIPT_URL, {
         method: "POST",
         mode: "cors", 
@@ -324,24 +340,22 @@ function submitQuiz(){
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Success submission:", data);
-        loadRanking(); // Reload ranking once Google Sheet updates successfully
+        console.log("Success:", data);
+        loadRanking(); 
     })
-    .catch(err => console.error("Data submission failed:", err));
+    .catch(err => console.error("Database Save Failed:", err));
 
     showPopup(output);
 }
 
+// 5. LEADERBOARD DISPLAY
 function loadRanking(){
     fetch(SCRIPT_URL)
     .then(response => response.json())
     .then(ranking => {
-        // Simple numeric sorting fix safely checking if score has a slash string
-        ranking.sort((a, b) => {
-            let scoreA = parseInt(a.score) || 0;
-            let scoreB = parseInt(b.score) || 0;
-            return scoreB - scoreA;
-        });
+        if(!Array.isArray(ranking)) return;
+        
+        ranking.sort((a, b) => (parseInt(b.score) || 0) - (parseInt(a.score) || 0));
 
         let table = document.getElementById("ranking");
         table.innerHTML = "";
@@ -363,9 +377,7 @@ function loadRanking(){
             `;
         });
     })
-    .catch(error => {
-        console.error("GET LEADERBOARD ERROR:", error);
-    });
+    .catch(error => console.error("Leaderboard error:", error));
 }
 
 function showPopup(html){
@@ -377,8 +389,9 @@ function closePopup(){
     document.getElementById("popup").style.display = "none";
 }
 
-// Initial pull on page load
+// Run leaderboard pull automatically
 loadRanking();
+
     
 </script>
 
