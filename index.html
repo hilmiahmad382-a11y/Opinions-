@@ -322,20 +322,22 @@ function submitQuiz() {
     formData.append("time", time);
 
     // POST Request to Google Sheets (Safe Form Format)
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors", 
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: formData.toString()
+    fetch('SCRIPT_URL', {
+  method: 'GET', // or 'POST'
+  redirect: 'follow' // Required to handle the redirect to googleusercontent.com
+})
+fetch(SCRIPT_URL)
+    .then(response => {
+        // If Google returns an HTML error page (like a login prompt), 
+        // the content-type won't be application/json.
+        const contentType = response.headers.get("content-type");
+        if (!response.ok || !contentType || !contentType.includes("application/json")) {
+            throw new Error("Expected JSON but received something else");
+        }
+        return response.json();
     })
-    .then(() => {
-        console.log("Data pushed successfully!");
-        // Wait a brief moment for the spreadsheet to write before refreshing the board
-        setTimeout(() => {
-            loadRanking();
-        }, 1500); 
+    .catch(err => console.error("Fetch error:", err));
+.then(data => console.log(data));
     })
     .catch(err => console.error("Database Save Failed:", err));
 
