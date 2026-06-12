@@ -1,4 +1,3 @@
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -275,6 +274,14 @@ const wrongSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.
 
 function submitQuiz(){
 
+let name = document.getElementById("name").value;
+let cls = document.getElementById("class").value;
+
+if (!name || !cls) {
+    alert("Please fill in your Name and Class before submitting!");
+    return;
+}
+
 let score = 0;
 let output = "";
 
@@ -290,26 +297,61 @@ output += `<p>❌ Q${i}: Wrong - ${explanations["q"+i]}</p>`;
 }
 }
 
-let name = document.getElementById("name").value;
-let cls = document.getElementById("class").value;
 let time = new Date().toLocaleString();
 
-// SAVE RANKING
+// SAVE RANKING LOKAL (agar tetap muncul di halaman)
 let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
 ranking.push({name, class:cls, score, time});
 localStorage.setItem("ranking", JSON.stringify(ranking));
 
 loadRanking();
 
+// UPDATE TAMPILAN RESULT
 document.getElementById("result").innerHTML = `
 <h3>🎯 Result</h3>
 Name: ${name}<br>
 Class: ${cls}<br>
 Score: ${score}/10<br>
-Time: ${time}
+Time: ${time}<br>
+<span id="save-status" style="color: #f39c12; font-weight: bold; margin-top:10px; display:inline-block;">🔄 Saving to Server/Excel...</span>
 `;
 
 showPopup(output);
+
+// SEND TO GOOGLE SHEETS API
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG9CwgpsP8GtsLxwX_NnVXOT6PAlupKTteu1OGBWQ40L0XhE8CZjnmOLo5YnA6GOfW/exec";
+
+let dataToSave = {
+    name: name,
+    class: cls,
+    score: score,
+    time: time
+};
+
+fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "text/plain" // text/plain digunakan agar tidak terkena pemblokiran CORS dari Google
+    },
+    body: JSON.stringify(dataToSave)
+})
+.then(response => response.json())
+.then(data => {
+    let statusEl = document.getElementById("save-status");
+    if(data.result === "success") {
+        statusEl.innerHTML = "✔️ Saved to Excel successfully!";
+        statusEl.style.color = "#2ecc71";
+    } else {
+        statusEl.innerHTML = "❌ Failed to save to Excel.";
+        statusEl.style.color = "red";
+    }
+})
+.catch(error => {
+    let statusEl = document.getElementById("save-status");
+    statusEl.innerHTML = "❌ Error connecting to server.";
+    statusEl.style.color = "red";
+    console.error("Fetch error:", error);
+});
 }
 
 // LEADERBOARD
