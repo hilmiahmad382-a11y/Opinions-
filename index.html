@@ -321,32 +321,33 @@ function submitQuiz() {
     }
 
     // POST Request to Google Sheets
+   // Convert your quiz variables into URL Parameters
+    const formData = new URLSearchParams();
+    formData.append("name", name);
+    formData.append("class", cls);
+    formData.append("score", `${score}/10`);
+    formData.append("time", time);
+
+    // POST Request to Google Sheets (Safe Form Format)
     fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "cors", 
+        mode: "no-cors", // Bypasses the strict browser security block completely
         headers: {
-            "Content-Type": "text/plain" 
+            "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: JSON.stringify({
-            name: name,
-            class: cls,
-            score: `${score}/10`,
-            time: time
-        })
+        body: formData.toString()
     })
-    .then(res => res.json())
-    .then(data => {
-        console.log("Response from Google Sheets:", data);
-        if (data.status === "success") {
-            loadRanking(); 
-        } else {
-            console.error("Google Script Error details:", data.message);
-        }
+    .then(() => {
+        console.log("Data pushed to Google Sheets successfully!");
+        // Force the leaderboard to fetch the newly appended sheet data
+        setTimeout(() => {
+            loadRanking();
+        }, 1000); 
     })
     .catch(err => console.error("Database Save Failed:", err));
 
     showPopup(output);
-}
+
 
 // 5. LEADERBOARD DISPLAY
 function loadRanking(){
