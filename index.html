@@ -305,17 +305,24 @@ Score: ${score}/10<br>
 Time: ${time}
 `;
 
-fetch(SCRIPT_URL,{
-method:"POST",
-body:JSON.stringify({
-name:name,
-class:cls,
-score:score,
-time:time
+fetch("YOUR_SCRIPT_URL", {
+  method: "POST",
+  mode: "cors", // Keeps cors mode active
+  headers: {
+    // Changing this to text/plain prevents the preflight OPTIONS request
+    "Content-Type": "text/plain" 
+  },
+  body: JSON.stringify({
+    name: "deni",
+    class: "6b",
+    score: "3/10",
+    time: "12/6/2026, 09.45.47"
+  })
 })
-})
-.then(response=>response.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => console.log(data))
+.catch(err => console.error("Error:", err));
+    
 
 if(score >= 8){
 correctSound.play();
