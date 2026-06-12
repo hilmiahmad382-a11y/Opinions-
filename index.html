@@ -235,8 +235,9 @@ button{
 </div>
 
 
+
 <script>
-// 1. SAFE AUDIO SETUP (Will not crash the site if the links are broken)
+// 1. SAFE AUDIO SETUP
 let correctSound, wrongSound;
 try {
     correctSound = new Audio("https://www.soundjay.com/buttons/sounds/button-4.mp3");
@@ -268,24 +269,20 @@ const explanations = {
 
 let selectedAnswers = {};
 
-// 3. SELECTION FUNCTION (Placed safely here to ensure clicking works)
+// 3. SELECTION FUNCTION
 function selectAnswer(q, ans, el){
     try {
         selectedAnswers[q] = ans;
-        
-        // Find options inside this specific question block
         let options = el.parentNode.querySelectorAll(".option");
         options.forEach(o => o.classList.remove("selected"));
-        
-        // Highlight chosen option
         el.classList.add("selected");
     } catch(err) {
         console.error("Selection error:", err);
     }
 }
 
-// 4. SUBMISSION HANDLING
-function submitQuiz(){
+// 4. SUBMISSION HANDLING (Fixed & Wrapped Correctly)
+function submitQuiz() {
     let name = document.getElementById("name").value.trim();
     let cls = document.getElementById("class").value.trim();
 
@@ -316,7 +313,6 @@ function submitQuiz(){
         Time: ${time}
     `;
 
-    // Play sounds safely without blocking data transmission
     try {
         if(score >= 8 && correctSound) correctSound.play().catch(()=>{});
         else if(wrongSound) wrongSound.play().catch(()=>{});
@@ -340,8 +336,12 @@ function submitQuiz(){
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Success:", data);
-        loadRanking(); 
+        console.log("Response from Google Sheets:", data);
+        if (data.status === "success") {
+            loadRanking(); 
+        } else {
+            console.error("Google Script Error details:", data.message);
+        }
     })
     .catch(err => console.error("Database Save Failed:", err));
 
@@ -389,10 +389,8 @@ function closePopup(){
     document.getElementById("popup").style.display = "none";
 }
 
-// Run leaderboard pull automatically
+// Run leaderboard pull automatically on page load
 loadRanking();
-
-    
 </script>
 
 </body>
